@@ -1,27 +1,30 @@
+import Builder from "creep/Builder";
+import Harvester from "creep/Harvester";
+import Upgrader from "creep/Upgrader";
 import { ErrorMapper } from "utils/ErrorMapper";
 
-declare global {
-  /*
-    Example types, expand on these or remove them and add your own.
-    Note: Values, properties defined here do no fully *exist* by this type definiton alone.
-          You must also give them an implemention if you would like to use them. (ex. actually setting a `role` property in a Creeps memory)
+export enum Role {
+  HARVESTER = "harvester",
+  BUILDER = "builder",
+  UPGRADER = "upgrader"
+}
 
-    Types added in this `global` block are in an ambient, global context. This is needed because `main.ts` is a module file (uses import or export).
-    Interfaces matching on name from @types/screeps will be merged. This is how you can extend the 'built-in' interfaces from @types/screeps.
-  */
-  // Memory extension samples
+declare global {
   interface Memory {
     uuid: number;
     log: any;
   }
 
   interface CreepMemory {
-    role: string;
-    room: string;
-    working: boolean;
+    role: Role;
+    room?: string;
+
+    harvestingIn?: string;
+    building?: boolean;
+    working?: boolean;
+    upgrading?: boolean;
   }
 
-  // Syntax for adding proprties to `global` (ex "global.log")
   namespace NodeJS {
     interface Global {
       log: any;
@@ -29,15 +32,94 @@ declare global {
   }
 }
 
-// When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
-// This utility uses source maps to get the line numbers and file names of the original, TS source code
+interface Stats {
+  creepCount: number;
+  harvesterCount: number;
+}
+
+const creepDistribution = {
+  harvester: 5,
+  upgrader: 5,
+  builder: 5
+};
+const MAX_CREEPS = _.sum(Object.values(creepDistribution));
+const CREEP_SPAWN_COST = 200;
+const ROOM_ID = "W29N47";
+
+function getStats(): Stats {
+  const allCreeps = Object.values(Game.creeps);
+
+  const creepCount = allCreeps.length;
+  const harvesterCount = allCreeps.filter(creep => creep.memory.role === Role.HARVESTER).length;
+  return {
+    creepCount,
+    harvesterCount
+  };
+}
+
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
+  const room = Game.rooms[ROOM_ID];
+  const spawn = Game.spawns["Spawn1"];
 
-  // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
-    }
+  const energySources = room.find(FIND_SOURCES);
+
+  // const spawn = Game.spawns["Spawn1"];
+  // const room = Game.rooms[ROOM_ID];
+  const stats = getStats();
+
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+    creepLoop(creep);
+  }
+
+  if (room.energyAvailable >= CREEP_SPAWN_COST && stats.creepCount < MAX_CREEPS) {
+    spawnNewCreep(spawn);
+  }
+  if (stats.creepCount === MAX_CREEPS) {
+    balanceCreepRoles(stats);
   }
 });
+
+function creepLoop(creep: Creep) {
+  const role = creep.memory.role;
+  const mapRoleWithClass = {
+    harvester: Harvester,
+    builder: Builder,
+    upgrader: Upgrader
+  };
+  const Class = mapRoleWithClass[role];
+  const myCreep = new Class(creep);
+  myCreep.loop();
+}
+
+function spawnNewCreep(spawn: StructureSpawn) {
+  spawn.spawnCreep([WORK, CARRY, MOVE], `Creep${Game.time}`, { memory: { role: Role.HARVESTER } });
+}
+
+function balanceCreepRoles(stats: Stats) {
+  const room = Game.rooms[ROOM_ID];
+  const creeps = Object.values(Game.creeps);
+  let harvestersCount = creepDistribution.harvester;
+  let upgradersCount = creepDistribution.upgrader;
+  let buildersCount = creepDistribution.builder;
+
+  const isRoomFullOfEnergy = room.energyAvailable === room.energyCapacityAvailable;
+  if (isRoomFullOfEnergy) {
+    buildersCount += harvestersCount;
+    harvestersCount = 0;
+  }
+
+  const needBuilders = Object.keys(Game.constructionSites).length > 0;
+
+  if (!needBuilders) {
+    upgradersCount += buildersCount;
+    buildersCount = 0;
+  }
+
+  console.log(`Balance {harvester: ${harvestersCount}, builders: ${buildersCount}, upgraders: ${upgradersCount} }`);
+
+  creeps.splice(0, harvestersCount).forEach(creep => (creep.memory.role = Role.HARVESTER));
+  creeps.splice(0, buildersCount).forEach(creep => (creep.memory.role = Role.BUILDER));
+  creeps.splice(0, upgradersCount).forEach(creep => (creep.memory.role = Role.UPGRADER));
+}
