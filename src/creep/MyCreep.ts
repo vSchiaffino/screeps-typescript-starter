@@ -18,6 +18,21 @@ export default class MyCreep {
     });
   }
 
+  protected getNearestStructure(structures: AnyStructure[]): AnyStructure | null {
+    let nearestStructure = structures[0];
+    let nearestDistance = this.creep.pos.getRangeTo(nearestStructure);
+
+    for (let i = 1; i < structures.length; i++) {
+      const currentDistance = this.creep.pos.getRangeTo(structures[i]);
+      if (currentDistance < nearestDistance) {
+        nearestStructure = structures[i];
+        nearestDistance = currentDistance;
+      }
+    }
+
+    return nearestStructure;
+  }
+
   protected storeEnergyInStructure() {
     this.creep.memory.harvestingIn = undefined;
     let structures = this.getStructuresNeedingEnergy();
@@ -39,9 +54,12 @@ export default class MyCreep {
     const container = this.getNearestNotEmptyContainer();
 
     if (container) {
+      console.log("container found");
       if (this.creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         this.creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
       }
+    } else {
+      console.log("not container found");
     }
   }
 

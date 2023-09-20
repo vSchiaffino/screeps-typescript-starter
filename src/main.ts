@@ -1,12 +1,14 @@
 import Builder from "creep/Builder";
 import Harvester from "creep/Harvester";
+import SpawnKeeper from "creep/SpawnKeeper";
 import Upgrader from "creep/Upgrader";
 import { ErrorMapper } from "utils/ErrorMapper";
 
 export enum Role {
   HARVESTER = "harvester",
   BUILDER = "builder",
-  UPGRADER = "upgrader"
+  UPGRADER = "upgrader",
+  SPAWN_KEEPER = "spawn_keeper"
 }
 
 declare global {
@@ -66,7 +68,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const spawn = Game.spawns[SPAWN_ID];
   const stats = getStats();
   const creeps = Object.values(Game.creeps);
+  // const containers =
+
   const energySources = room.find(FIND_SOURCES);
+  // const areContainersFull = _.sum()
   const harvestersNeeded = _.sum(energySources.map(source => getHarvestersNeededFor(source)));
 
   balanceCreepRoles(stats, harvestersNeeded);
@@ -87,7 +92,8 @@ function creepLoop(creep: Creep) {
   const mapRoleWithClass = {
     harvester: Harvester,
     builder: Builder,
-    upgrader: Upgrader
+    upgrader: Upgrader,
+    spawn_keeper: SpawnKeeper
   };
   const Class = mapRoleWithClass[role];
   const myCreep = new Class(creep);
@@ -104,11 +110,14 @@ function balanceCreepRoles(stats: Stats, harvestersCount: number) {
 
   const needBuilders = Object.keys(Game.constructionSites).length > 0;
   const buildersCount = needBuilders ? 5 : 0;
-  
-  let upgradersCount = MAX_CREEPS - harvestersCount - buildersCount;
 
-  console.log(`Balance {harvester: ${harvestersCount}, builders: ${buildersCount}, upgraders: ${upgradersCount} }`);
+  let upgradersCount = MAX_CREEPS - harvestersCount - buildersCount - 1;
 
+  console.log(
+    `Balance {harvester: ${harvestersCount}, builders: ${buildersCount}, upgraders: ${upgradersCount}, keepers: 1}`
+  );
+
+  creeps.splice(0, 1).forEach(creep => (creep.memory.role = Role.SPAWN_KEEPER));
   creeps.splice(0, harvestersCount).forEach(creep => (creep.memory.role = Role.HARVESTER));
   creeps.splice(0, buildersCount).forEach(creep => (creep.memory.role = Role.BUILDER));
   creeps.splice(0, upgradersCount).forEach(creep => (creep.memory.role = Role.UPGRADER));
