@@ -64,7 +64,7 @@ function creepLoop(creep: Creep) {
 }
 
 function spawnNewCreep(spawn: StructureSpawn) {
-  spawn.spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], `Creep${Game.time}`, {
+  spawn.spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], `Creep${Game.time}`, {
     memory: { role: Role.HARVESTER }
   });
 }

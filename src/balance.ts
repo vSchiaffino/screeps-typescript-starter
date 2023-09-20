@@ -3,16 +3,16 @@ import { BUILDERS_NEEDED, KEEPERS_NEEDED, MAX_CREEPS } from "./constants";
 export function balanceCreepRoles(room: Room) {
   const creepCount = Object.values(Game.creeps).length;
 
-  const isCreeperDeficit = creepCount < MAX_CREEPS;
+  // const isCreeperDeficit = creepCount < MAX_CREEPS;
 
-  if (isCreeperDeficit) {
-    return {
-      spawn_keeper: KEEPERS_NEEDED,
-      harvester: creepCount - KEEPERS_NEEDED,
-      builder: 0,
-      upgrader: 0
-    };
-  }
+  // if (isCreeperDeficit) {
+  //   return {
+  //     spawn_keeper: KEEPERS_NEEDED,
+  //     harvester: creepCount - KEEPERS_NEEDED,
+  //     builder: 0,
+  //     upgrader: 0
+  //   };
+  // }
 
   const areContainersFull = getFreeContainersCapacity(room) <= 0;
   const areStructuresFull = getFreeStructuresCapacity(room) <= 0;
