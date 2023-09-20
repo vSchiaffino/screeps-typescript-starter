@@ -35,6 +35,32 @@ export default class MyCreep {
     }
   }
 
+  protected lookForEnergy() {
+    const container = this.getNearestNotEmptyContainer();
+
+    if (container) {
+      if (this.creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        this.creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
+      }
+    }
+  }
+
+  protected getNearestNotEmptyContainer(): StructureContainer {
+    let structures = this.creep.room.find<StructureContainer>(FIND_STRUCTURES, {
+      filter: structure => {
+        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getCapacity() > 0;
+      }
+    });
+
+    structures.sort((structureA, structureB) => {
+      const distanceA = this.creep.pos.getRangeTo(structureA);
+      const distanceB = this.creep.pos.getRangeTo(structureB);
+      return distanceA - distanceB;
+    });
+
+    return structures[0];
+  }
+
   protected harvest() {
     // console.log("harvest()");
 

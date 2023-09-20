@@ -6,13 +6,13 @@ export default class Upgrader extends MyCreep {
     const isStoreEmpty = this.creep.store[RESOURCE_ENERGY] == 0;
     const isUpgrading = this.creep.memory.upgrading;
 
-    if (isUpgrading && isStoreEmpty) this.startHarvesting();
+    if (isUpgrading && isStoreEmpty) this.startEnergyLookup();
     if (!isUpgrading && isStoreFull) this.startUpgrading();
 
     if (this.creep.memory.upgrading) {
       this.upgrade();
     } else {
-      this.harvest();
+      this.lookForEnergy();
     }
   }
 
@@ -21,8 +21,8 @@ export default class Upgrader extends MyCreep {
     this.creep.say("⚡ upgrade");
   }
 
-  private startHarvesting() {
+  private startEnergyLookup() {
     this.creep.memory.upgrading = false;
-    this.creep.say("🔄 harvest");
+    this.creep.say("🔄 energy");
   }
 }
