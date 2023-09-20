@@ -1,15 +1,12 @@
+import { SPAWN_ID, MAX_CREEPS, CREEP_SPAWN_COST, ROOM_ID } from "./constants";
 import Builder from "creep/Builder";
 import Harvester from "creep/Harvester";
 import SpawnKeeper from "creep/SpawnKeeper";
 import Upgrader from "creep/Upgrader";
+import { Role } from "interfaces/Role";
 import { ErrorMapper } from "utils/ErrorMapper";
-
-export enum Role {
-  HARVESTER = "harvester",
-  BUILDER = "builder",
-  UPGRADER = "upgrader",
-  SPAWN_KEEPER = "spawn_keeper"
-}
+import { setRoles } from "setRoles";
+import { distributeSourcesOf } from "distributeSources";
 
 declare global {
   interface Memory {
@@ -35,54 +32,21 @@ declare global {
   }
 }
 
-interface Stats {
-  creepCount: number;
-  harvesterCount: number;
-}
-
-const creepDistribution = {
-  harvester: 5,
-  upgrader: 5,
-  builder: 5
-};
-
-const MAX_CREEPS = _.sum(Object.values(creepDistribution));
-const CREEP_SPAWN_COST = 200;
-const ROOM_ID = "W29N47";
-const SPAWN_ID = "Spawn1";
-
-function getStats(): Stats {
-  const allCreeps = Object.values(Game.creeps);
-
-  const creepCount = allCreeps.length;
-  const harvesterCount = allCreeps.filter(creep => creep.memory.role === Role.HARVESTER).length;
-  return {
-    creepCount,
-    harvesterCount
-  };
-}
-
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
   const room = Game.rooms[ROOM_ID];
   const spawn = Game.spawns[SPAWN_ID];
-  const stats = getStats();
   const creeps = Object.values(Game.creeps);
-  // const containers =
 
-  const energySources = room.find(FIND_SOURCES);
-  // const areContainersFull = _.sum()
-  const harvestersNeeded = _.sum(energySources.map(source => getHarvestersNeededFor(source)));
-
-  balanceCreepRoles(stats, harvestersNeeded);
-  assignHarvestersToSources();
+  setRoles(room);
+  distributeSourcesOf(room);
 
   for (const creepName in Game.creeps) {
     const creep = Game.creeps[creepName];
     creepLoop(creep);
   }
 
-  if (room.energyAvailable >= CREEP_SPAWN_COST && stats.creepCount < MAX_CREEPS) {
+  if (room.energyAvailable >= CREEP_SPAWN_COST && creeps.length < MAX_CREEPS) {
     spawnNewCreep(spawn);
   }
 });
@@ -102,68 +66,4 @@ function creepLoop(creep: Creep) {
 
 function spawnNewCreep(spawn: StructureSpawn) {
   spawn.spawnCreep([WORK, CARRY, MOVE], `Creep${Game.time}`, { memory: { role: Role.HARVESTER } });
-}
-
-function balanceCreepRoles(stats: Stats, harvestersCount: number) {
-  const room = Game.rooms[ROOM_ID];
-  const creeps = Object.values(Game.creeps);
-
-  const needBuilders = Object.keys(Game.constructionSites).length > 0;
-  const buildersCount = needBuilders ? 5 : 0;
-
-  let upgradersCount = MAX_CREEPS - harvestersCount - buildersCount - 1;
-
-  console.log(
-    `Balance {harvester: ${harvestersCount}, builders: ${buildersCount}, upgraders: ${upgradersCount}, keepers: 1}`
-  );
-
-  creeps.splice(0, 1).forEach(creep => (creep.memory.role = Role.SPAWN_KEEPER));
-  creeps.splice(0, harvestersCount).forEach(creep => (creep.memory.role = Role.HARVESTER));
-  creeps.splice(0, buildersCount).forEach(creep => (creep.memory.role = Role.BUILDER));
-  creeps.splice(0, upgradersCount).forEach(creep => (creep.memory.role = Role.UPGRADER));
-}
-
-export function getHarvestersNeededFor(source: Source): number {
-  const sourcePos = source.pos;
-  const room = source.room;
-
-  const terrain = room.getTerrain();
-
-  const walkablePositions = room
-    .lookForAtArea(LOOK_TERRAIN, sourcePos.y - 1, sourcePos.x - 1, sourcePos.y + 1, sourcePos.x + 1, true)
-    .filter(tile => terrain.get(tile.x, tile.y) !== TERRAIN_MASK_WALL);
-
-  return walkablePositions.length;
-}
-
-function convertAllCreepsToHarvesters() {
-  console.log(`since we have ${Object.keys(Game.creeps).length} creeps we are converting all to harvesters`);
-  for (const creep of Object.values(Game.creeps)) {
-    creep.memory.role = Role.HARVESTER;
-  }
-}
-
-function assignHarvestersToSources() {
-  const room = Game.rooms[ROOM_ID];
-  const creeps = Object.values(Game.creeps);
-
-  const energySources = room.find(FIND_SOURCES);
-  const harvestersBySource: { [sourceId: string]: Creep[] } = {};
-  const harvesters = creeps.filter(creep => creep.memory.role === Role.HARVESTER);
-  const unnasignedHarvesters = harvesters.filter(c => c.memory.assignedToSource === undefined);
-
-  for (const source of energySources) {
-    const needed = getHarvestersNeededFor(source);
-    const assignedToThisSource = harvesters.filter(creep => creep.memory.assignedToSource === source.id);
-    if (assignedToThisSource.length < needed) {
-      assignedToThisSource.push(...unnasignedHarvesters.splice(0, needed - assignedToThisSource.length));
-    }
-    harvestersBySource[source.id] = assignedToThisSource;
-  }
-
-  for (const [sourceId, harvesters] of Object.entries(harvestersBySource)) {
-    for (const creep of harvesters) {
-      creep.memory.assignedToSource = sourceId;
-    }
-  }
 }

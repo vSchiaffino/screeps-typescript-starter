@@ -18,11 +18,11 @@ export default class Builder extends MyCreep {
 
   private startBuilding() {
     this.creep.memory.building = true;
-    this.creep.say("🚧 build");
+    // this.creep.say("🚧 build");
   }
 
   private startEnergyLookup() {
     this.creep.memory.upgrading = false;
-    this.creep.say("🔄 energy");
+    // this.creep.say("🔄 energy");
   }
 }

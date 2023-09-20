@@ -18,11 +18,11 @@ export default class Upgrader extends MyCreep {
 
   private startUpgrading() {
     this.creep.memory.upgrading = true;
-    this.creep.say("⚡ upgrade");
+    // this.creep.say("⚡ upgrade");
   }
 
   private startEnergyLookup() {
     this.creep.memory.upgrading = false;
-    this.creep.say("🔄 energy");
+    // this.creep.say("🔄 energy");
   }
 }

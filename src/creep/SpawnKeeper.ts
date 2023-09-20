@@ -4,7 +4,7 @@ export default class SpawnKeeper extends MyCreep {
   public loop(): void {
     const structuresNeedingEnergy = this.getStructuresNeedingEnergy();
     if (structuresNeedingEnergy.length === 0) {
-      this.creep.say("idle");
+      // this.creep.say("idle");
       return;
     }
 
@@ -28,11 +28,11 @@ export default class SpawnKeeper extends MyCreep {
 
   private startKeeping() {
     this.creep.memory.building = true;
-    this.creep.say("🚧 keep");
+    // this.creep.say("🚧 keep");
   }
 
   private startEnergyLookup() {
     this.creep.memory.building = false;
-    this.creep.say("🔄 energy");
+    // this.creep.say("🔄 energy");
   }
 }
