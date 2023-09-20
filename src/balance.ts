@@ -46,6 +46,7 @@ export function getHarvesterNeededForRoom(room: Room) {
 }
 
 export function getHarvestersNeededFor(source: Source): number {
+  if (source.energy === 0) return 0;
   const sourcePos = source.pos;
   const room = source.room;
 
@@ -60,8 +61,14 @@ export function getHarvestersNeededFor(source: Source): number {
 function getFreeStructuresCapacity(room: Room) {
   let structures = room.find<AnyStoreStructure>(FIND_STRUCTURES, {
     filter: structure => {
-      return structure.structureType in [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER];
+      return (
+        structure.structureType === STRUCTURE_EXTENSION ||
+        structure.structureType === STRUCTURE_SPAWN ||
+        structure.structureType === STRUCTURE_TOWER
+      );
     }
   });
-  return _.sum(structures.map(s => s.store.getFreeCapacity(RESOURCE_ENERGY)));
+  const ret = _.sum(structures.map(s => s.store.getFreeCapacity(RESOURCE_ENERGY)));
+  console.log("getFreeStructuresCapacity ", ret);
+  return ret;
 }

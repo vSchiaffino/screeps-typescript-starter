@@ -54,7 +54,6 @@ export default class MyCreep {
     const container = this.getNearestNotEmptyContainer();
 
     if (container) {
-      console.log("container found");
       if (this.creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         this.creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
       }

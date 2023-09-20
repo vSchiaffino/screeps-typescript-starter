@@ -20,9 +20,8 @@ declare global {
 
     assignedToSource?: string;
     harvestingIn?: string;
-    building?: boolean;
-    working?: boolean;
-    upgrading?: boolean;
+
+    isWorking?: boolean;
   }
 
   namespace NodeJS {
@@ -65,5 +64,7 @@ function creepLoop(creep: Creep) {
 }
 
 function spawnNewCreep(spawn: StructureSpawn) {
-  spawn.spawnCreep([WORK, CARRY, MOVE], `Creep${Game.time}`, { memory: { role: Role.HARVESTER } });
+  spawn.spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE], `Creep${Game.time}`, {
+    memory: { role: Role.HARVESTER }
+  });
 }
