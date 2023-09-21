@@ -3,8 +3,8 @@ import { Role } from "interfaces/Role";
 
 export function setRoles(room: Room) {
   let balance = balanceCreepRoles(room);
-  console.log("balance", JSON.stringify(balance));
   const creeps = Object.values(Game.creeps);
+  console.log("total: ", creeps.length, "balance ", JSON.stringify(balance));
 
   for (const creep of creeps) {
     const rolePriority: Role[] = [Role.SPAWN_KEEPER, Role.HARVESTER, Role.BUILDER, Role.UPGRADER];

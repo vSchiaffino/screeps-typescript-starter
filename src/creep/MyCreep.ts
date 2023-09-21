@@ -52,20 +52,35 @@ export default class MyCreep {
 
   protected lookForEnergy() {
     const container = this.getNearestNotEmptyContainer();
+    if (this.creep.memory.dndTimer !== undefined) {
+      this.creep.say("dnd" + this.creep.memory.dndTimer);
+      this.creep.moveTo(Game.flags["dnd"], { visualizePathStyle: { stroke: "#ffffff" } });
+      this.creep.memory.dndTimer -= 1;
+      if (this.creep.memory.dndTimer <= 0) {
+        this.creep.memory.dndTimer = undefined;
+      }
+      return;
+    }
 
     if (container) {
-      if (this.creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+      console.log("container found", container.store.energy);
+      const result = this.creep.withdraw(container, RESOURCE_ENERGY);
+      if (result === ERR_NOT_IN_RANGE) {
         this.creep.moveTo(container, { visualizePathStyle: { stroke: "#ffffff" } });
       }
     } else {
       console.log("not container found");
+      this.creep.say("dnd");
+      this.creep.memory.dndTimer = 50;
     }
   }
 
   protected getNearestNotEmptyContainer(): StructureContainer {
     let structures = this.creep.room.find<StructureContainer>(FIND_STRUCTURES, {
       filter: structure => {
-        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getCapacity() > 0;
+        return (
+          structure.structureType === STRUCTURE_CONTAINER && structure.store.energy > this.creep.store.getCapacity()
+        );
       }
     });
 

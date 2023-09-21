@@ -21,6 +21,7 @@ declare global {
     assignedToSource?: string;
     harvestingIn?: string;
 
+    dndTimer?: number;
     isWorking?: boolean;
   }
 
