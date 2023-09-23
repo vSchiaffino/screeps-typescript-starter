@@ -1,4 +1,4 @@
-import { BUILDERS_NEEDED, KEEPERS_NEEDED, MAX_CREEPS } from "./constants";
+import { BUILDERS_NEEDED, KEEPERS_NEEDED } from "./constants";
 
 export function balanceCreepRoles(room: Room) {
   const creepCount = Object.values(Game.creeps).length;
@@ -33,9 +33,7 @@ export function balanceCreepRoles(room: Room) {
 
 export function getFreeContainersCapacity(room: Room): number {
   let structures = room.find<StructureContainer>(FIND_STRUCTURES, {
-    filter: s => {
-      return s.structureType === STRUCTURE_CONTAINER;
-    }
+    filter: s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE
   });
   return _.sum(structures.map(s => s.store.getFreeCapacity(RESOURCE_ENERGY)));
 }
