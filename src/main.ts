@@ -5,6 +5,7 @@ import { setCreepRoles } from "setRoles";
 import { distributeSourcesOf } from "distributeSources";
 import { checkCreepSpawning } from "creepSpawning";
 import { creepsLoop } from "creepLoop";
+import { towersLoop } from "towerLoop";
 
 declare global {
   interface Memory {
@@ -38,4 +39,5 @@ export const loop = ErrorMapper.wrapLoop(() => {
   distributeSourcesOf(room);
   creepsLoop();
   checkCreepSpawning(spawn, room);
+  towersLoop(room)
 });
