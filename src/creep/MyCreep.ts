@@ -78,9 +78,9 @@ export default class MyCreep {
   protected getNearestNotEmptyContainer(): StructureContainer {
     let structures = this.creep.room.find<StructureContainer>(FIND_STRUCTURES, {
       filter: structure => {
-        return (
-          structure.structureType === STRUCTURE_CONTAINER && structure.store.energy > this.creep.store.getCapacity()
-        );
+        const isStorage = structure.structureType == STRUCTURE_STORAGE;
+        const isContainer = structure.structureType === STRUCTURE_CONTAINER;
+        return (isStorage || isContainer) && structure.store.energy > this.creep.store.getCapacity();
       }
     });
 
