@@ -34,10 +34,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
   const room = Game.rooms[ROOM_ID];
   const spawn = Game.spawns[SPAWN_ID];
+  // Automatically delete memory of missing creeps
+  for (const name in Memory.creeps) {
+    if (!(name in Game.creeps)) {
+      delete Memory.creeps[name];
+    }
+  }
 
   setCreepRoles(room);
   distributeSourcesOf(room);
-  
+
   for (const creepName in Game.creeps) {
     const creep = Game.creeps[creepName];
     creepLoop(creep);
