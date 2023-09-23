@@ -3,7 +3,23 @@ import Harvester from "creep/Harvester";
 import SpawnKeeper from "creep/SpawnKeeper";
 import Upgrader from "creep/Upgrader";
 
-export function creepLoop(creep: Creep) {
+export function creepsLoop() {
+  purgeCreepMemory()
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+    creepLoop(creep);
+  }
+}
+
+function purgeCreepMemory() {
+  for (const name in Memory.creeps) {
+    if (!(name in Game.creeps)) {
+      delete Memory.creeps[name];
+    }
+  }
+}
+
+function creepLoop(creep: Creep) {
   const role = creep.memory.role;
   const mapRoleWithClass = {
     harvester: Harvester,
