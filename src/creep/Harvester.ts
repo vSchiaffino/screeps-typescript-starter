@@ -13,7 +13,10 @@ export default class Harvester extends MyCreep {
   protected storeEnergyInStructure(): void {
     let structures = this.creep.room.find(FIND_STRUCTURES, {
       filter: structure => {
-        return structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity() > 0;
+        return (
+          (structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_STORAGE) &&
+          structure.store.getFreeCapacity() > 0
+        );
       }
     });
 
