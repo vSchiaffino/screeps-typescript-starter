@@ -39,4 +39,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   creepsLoop();
   checkCreepSpawning(spawn, room);
   towersLoop(room);
+  const creepsByRole = Object.entries(_.groupBy(Object.values(Game.creeps), creep => creep.memory.role)).map(
+    ([k, v]) => `${k}: ${v.length}`
+  );
+  console.log(JSON.stringify(creepsByRole));
 });

@@ -6,13 +6,12 @@ export default class Upgrader extends ResourceWorker {
   }
 
   protected lookForEnergy() {
-    const container = this.getNearestContainer();
-    const percentage = (container && container.store.getUsedCapacity() / container.store.getCapacity()) || 0;
-    if (container && percentage > 0.5) {
-      this.lookForEnergyInContainer(container);
+    if (this.creep.room.controller && this.creep.room.controller.pos !== this.creep.pos) {
+      this.creep.moveTo(this.creep.room.controller?.pos as any as RoomPosition, {
+        visualizePathStyle: { stroke: "#ffffff" }
+      });
     } else {
-      this.creep.moveTo(this.creep.room.controller!, { visualizePathStyle: { stroke: "#ffffff" } });
-      this.creep.say("idle upgrader");
+      this.creep.say("🔄 energy");
     }
   }
 

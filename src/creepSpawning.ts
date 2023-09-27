@@ -1,16 +1,16 @@
 import {
-  MAX_CREEPS,
   WORST_CREEP_SPAWN_COST,
   CREEP_SPAWN_COST,
   KEEPERS_NEEDED,
   BUILDERS_NEEDED,
-  UPGRADERS_NEEDED
+  UPGRADERS_NEEDED,
+  UPGRADER_TRUCK_NEEDED
 } from "./constants";
 import { Role } from "interfaces/Role";
 
 export function checkCreepSpawning(spawn: StructureSpawn, room: Room) {
   const harvestersNeeded = getHarvesterNeededForRoom(room);
-  const creepsNeeded = KEEPERS_NEEDED + harvestersNeeded + BUILDERS_NEEDED + UPGRADERS_NEEDED;
+  const creepsNeeded = KEEPERS_NEEDED + harvestersNeeded + BUILDERS_NEEDED + UPGRADERS_NEEDED + UPGRADER_TRUCK_NEEDED;
   const creepCount = Object.keys(Game.creeps).length;
   const canSpawnBestCreep = room.energyAvailable >= CREEP_SPAWN_COST;
   const canSpawnWorstCreep = room.energyAvailable >= WORST_CREEP_SPAWN_COST;
@@ -71,7 +71,9 @@ export function getNextCreepToSpawn(room: Room) {
   const keepersCount = creeps.filter(creep => creep.memory.role === Role.SPAWN_KEEPER).length;
   const harvesterCount = creeps.filter(creep => creep.memory.role === Role.HARVESTER).length;
   const buildersCount = creeps.filter(creep => creep.memory.role === Role.BUILDER).length;
+  const trucksCount = creeps.filter(creep => creep.memory.role === Role.UPGRADER_TRUCK).length;
 
+  const needsTruck = trucksCount < UPGRADER_TRUCK_NEEDED;
   const needsBuilder = buildersCount < BUILDERS_NEEDED;
   const needKeeper = keepersCount < KEEPERS_NEEDED;
   const needHarvester = harvesterCount < getHarvesterNeededForRoom(room);
@@ -80,7 +82,8 @@ export function getNextCreepToSpawn(room: Room) {
     harvester: [WORK, WORK, WORK, WORK, WORK, WORK, MOVE, CARRY, CARRY],
     spawn_keeper: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     builder: [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY],
-    upgrader: [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY]
+    upgrader: [WORK, WORK, WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY],
+    upgrader_truck: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
   };
 
   const role = needKeeper
@@ -89,6 +92,8 @@ export function getNextCreepToSpawn(room: Room) {
     ? Role.HARVESTER
     : needsBuilder
     ? Role.BUILDER
+    : needsTruck
+    ? Role.UPGRADER_TRUCK
     : Role.UPGRADER;
 
   const body = bodyByRole[role];

@@ -2,9 +2,10 @@ import Builder from "creep/Builder";
 import Harvester from "creep/Harvester";
 import SpawnKeeper from "creep/SpawnKeeper";
 import Upgrader from "creep/Upgrader";
+import UpgraderTruck from "creep/UpgraderTruck";
 
 export function creepsLoop() {
-  purgeCreepMemory()
+  purgeCreepMemory();
   for (const creepName in Game.creeps) {
     const creep = Game.creeps[creepName];
     creepLoop(creep);
@@ -25,7 +26,8 @@ function creepLoop(creep: Creep) {
     harvester: Harvester,
     builder: Builder,
     upgrader: Upgrader,
-    spawn_keeper: SpawnKeeper
+    spawn_keeper: SpawnKeeper,
+    upgrader_truck: UpgraderTruck
   };
   const Class = mapRoleWithClass[role];
   const myCreep = new Class(creep);

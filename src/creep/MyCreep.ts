@@ -5,7 +5,12 @@ export default class MyCreep {
   constructor(creep: Creep) {
     this.creep = creep;
   }
-  public loop() {}
+  public loop() {
+    if (this.creep.memory.room && this.creep.room.name !== this.creep.memory.room) {
+      this.creep.moveTo(new RoomPosition(25, 25, this.creep.memory.room));
+      return;
+    }
+  }
 
   protected getNearestStructureNeedingEnergy() {
     const notTower = this.creep.pos.findClosestByPath<AnyStoreStructure>(FIND_MY_STRUCTURES, {

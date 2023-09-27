@@ -15,7 +15,7 @@ function towerLoop(room: Room, tower: StructureTower) {
   });
   const closestHostileCreep = towerPos.findClosestByRange(FIND_HOSTILE_CREEPS);
   const closestStructureNeedingRepair = towerPos.findClosestByRange(FIND_STRUCTURES, {
-    filter: s => s.hits < s.hitsMax
+    filter: s => s.hits < s.hitsMax && s.structureType !== STRUCTURE_WALL
   });
 
   if (closestHostileCreep) {
