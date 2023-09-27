@@ -11,10 +11,11 @@ export default class Harvester extends MyCreep {
   }
 
   protected storeEnergyInStructure(): void {
-    let structure = this.creep.pos.findClosestByRange(FIND_STRUCTURES, {
+    let structure = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
       filter: structure => {
         return (
           (structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_STORAGE) &&
+          structure.pos.findPathTo(structure).length < 6 &&
           structure.store.getFreeCapacity() > 0
         );
       }
@@ -24,6 +25,8 @@ export default class Harvester extends MyCreep {
       if (this.creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.creep.moveTo(structure, { visualizePathStyle: { stroke: "#ffffff" } });
       }
+    } else {
+      this.creep.say("full");
     }
   }
 

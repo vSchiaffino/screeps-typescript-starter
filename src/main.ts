@@ -1,7 +1,6 @@
 import { SPAWN_ID, ROOM_ID } from "./constants";
 import { Role } from "interfaces/Role";
 import { ErrorMapper } from "utils/ErrorMapper";
-import { setCreepRoles } from "setRoles";
 import { distributeSourcesOf } from "distributeSources";
 import { checkCreepSpawning } from "creepSpawning";
 import { creepsLoop } from "creepLoop";
@@ -20,6 +19,7 @@ declare global {
     assignedToSource?: string;
     harvestingIn?: string;
 
+    isSpecialCreep?: boolean;
     dndTimer?: number;
     isWorking?: boolean;
   }
@@ -35,9 +35,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
   const room = Game.rooms[ROOM_ID];
   const spawn = Game.spawns[SPAWN_ID];
-  setCreepRoles(room);
   distributeSourcesOf(room);
   creepsLoop();
   checkCreepSpawning(spawn, room);
-  towersLoop(room)
+  towersLoop(room);
 });

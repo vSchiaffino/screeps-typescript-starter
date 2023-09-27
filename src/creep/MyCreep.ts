@@ -8,14 +8,19 @@ export default class MyCreep {
   public loop() {}
 
   protected getNearestStructureNeedingEnergy() {
-    return this.creep.pos.findClosestByPath<AnyStoreStructure>(FIND_MY_STRUCTURES, {
+    const notTower = this.creep.pos.findClosestByPath<AnyStoreStructure>(FIND_MY_STRUCTURES, {
       filter: structure => {
         return (
-          (structure.structureType == STRUCTURE_EXTENSION ||
-            structure.structureType == STRUCTURE_SPAWN ||
-            structure.structureType == STRUCTURE_TOWER) &&
+          (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
           structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
         );
+      }
+    });
+    if (notTower) return notTower;
+
+    return this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
+      filter: structure => {
+        return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
       }
     });
   }
@@ -46,7 +51,7 @@ export default class MyCreep {
   }
 
   protected lookForEnergy() {
-    const container = this.getNearestNotEmptyContainer();
+    const container = this.getNearestContainer();
     // if (this.creep.memory.dndTimer !== undefined) {
     //   this.creep.say("dnd" + this.creep.memory.dndTimer);
     //   this.creep.moveTo(Game.flags["dnd"], { visualizePathStyle: { stroke: "#ffffff" } });
@@ -74,7 +79,7 @@ export default class MyCreep {
     }
   }
 
-  protected getNearestNotEmptyContainer(): Container | null {
+  protected getNearestContainer(): Container | null {
     return this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
       filter: structure => {
         const isStorage = structure.structureType == STRUCTURE_STORAGE;
@@ -133,6 +138,10 @@ export default class MyCreep {
       if (this.creep.build(constWithMinWorkLeft) === ERR_NOT_IN_RANGE) {
         this.creep.moveTo(constWithMinWorkLeft, { visualizePathStyle: { stroke: "#ffffff" } });
       }
+    } else {
+      // this.
+      this.upgrade();
+      // this.creep.say("idle builder");
     }
   }
 }

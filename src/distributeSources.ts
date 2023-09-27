@@ -1,4 +1,4 @@
-import { getHarvestersNeededFor } from "balance";
+import { getHarvestersNeededFor } from "./creepSpawning";
 import { Role } from "interfaces/Role";
 
 export function distributeSourcesOf(room: Room) {
