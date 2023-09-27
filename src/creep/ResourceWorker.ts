@@ -26,4 +26,9 @@ export default abstract class ResourceWorker extends MyCreep {
     this.creep.memory.isWorking = false;
     this.creep.say("🔄 energy");
   }
+
+  protected decideNextHarvestSource(): Source {
+    const pos = this.creep.pos;
+    return pos.findClosestByPath(FIND_SOURCES_ACTIVE) as Source;
+  }
 }

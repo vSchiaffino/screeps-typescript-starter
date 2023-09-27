@@ -14,6 +14,9 @@ export function checkCreepSpawning(spawn: StructureSpawn, room: Room) {
   } else if (!areCreepsAlive && canSpawnWorstCreep) {
     spawnNewCreep(spawn, worstCreepBody);
   }
+  // if (creepCount < MAX_CREEPS && canSpawnWorstCreep) {
+  //   spawnNewCreep(spawn, worstCreepBody);
+  // }
 }
 
 function spawnNewCreep(spawn: StructureSpawn, creepBody: BodyPartConstant[]) {
