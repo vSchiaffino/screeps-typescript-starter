@@ -82,7 +82,7 @@ export function getNextCreepToSpawn(room: Room) {
     harvester: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, CARRY, CARRY],
     spawn_keeper: Array(13).fill(CARRY).concat(Array(13).fill(MOVE)),
     builder: Array(8).fill(WORK).concat(Array(6).fill(MOVE)).concat(Array(4).fill(CARRY)),
-    upgrader: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY],
+    upgrader: Array(7).fill(WORK).concat(Array(8).fill(MOVE)).concat(Array(4).fill(CARRY)),
     upgrader_truck: Array(18).fill(CARRY).concat(Array(8).fill(MOVE))
   };
 

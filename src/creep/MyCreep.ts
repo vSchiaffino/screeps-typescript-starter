@@ -89,7 +89,7 @@ export default class MyCreep {
       filter: structure => {
         const isStorage = structure.structureType == STRUCTURE_STORAGE;
         const isContainer = structure.structureType === STRUCTURE_CONTAINER;
-        return (isStorage || isContainer) && structure.store.energy > this.creep.store.getCapacity();
+        return (isStorage || isContainer) && structure.store.energy > this.creep.store.getFreeCapacity();
       }
     });
   }
