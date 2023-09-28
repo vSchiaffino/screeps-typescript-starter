@@ -79,11 +79,11 @@ export function getNextCreepToSpawn(room: Room) {
   const needHarvester = harvesterCount < getHarvesterNeededForRoom(room);
 
   const bodyByRole: { [x: string]: BodyPartConstant[] } = {
-    harvester: [WORK, WORK, WORK, WORK, WORK, WORK, MOVE, CARRY, CARRY],
-    spawn_keeper: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
-    builder: [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY],
-    upgrader: [WORK, WORK, WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY],
-    upgrader_truck: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+    harvester: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, CARRY, CARRY],
+    spawn_keeper: Array(13).fill(CARRY).concat(Array(13).fill(MOVE)),
+    builder: Array(8).fill(WORK).concat(Array(6).fill(MOVE)).concat(Array(4).fill(CARRY)),
+    upgrader: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY],
+    upgrader_truck: Array(18).fill(CARRY).concat(Array(8).fill(MOVE))
   };
 
   const role = needKeeper

@@ -3,7 +3,7 @@ export const SPAWN_ID = "Spawn1";
 
 export const MAX_CREEPS = 10;
 
-export const CREEP_SPAWN_COST = 750;
+export const CREEP_SPAWN_COST = 1300;
 export const WORST_CREEP_SPAWN_COST = 200;
 
 export const KEEPERS_NEEDED = 2;
